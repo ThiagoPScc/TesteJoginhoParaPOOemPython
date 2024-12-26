@@ -1,3 +1,4 @@
+#Esse joguinho foi feito para ser jogado no Google Colab
 import ipywidgets as widgets
 from IPython.display import display
 import random

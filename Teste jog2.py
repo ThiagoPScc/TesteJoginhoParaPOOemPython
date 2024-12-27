@@ -22,13 +22,13 @@ class Personagem:
     def escolher_classe(self,Criatura):
       print("escolha sua classe")
       buttonEscolhaMago = widgets.Button(description="Mago")
-      print("vida = 30 e dano = 20")
+      print("vida = 55 e dano = 35")
       def mago(b):
-        self.vida= 30
-        self.dano= 20
+        self.vida= 55
+        self.dano= 35
         self.classe = "Mago"
         self.pocao = 1
-        self.habilidade = {"habilidade":f"Ganha {self.level * 1} de dano permanente a cada 2 turnos no combate","Valor":1 * self.level}
+        self.habilidade = {"habilidade":f"Ganha {self.level * 2} de dano permanente a cada 2 turnos no combate","Valor":2 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -36,13 +36,13 @@ class Personagem:
       display(buttonEscolhaMago)
 
       buttonEscolhaGuerreiro = widgets.Button(description="Guerreiro")
-      print("vida = 45 e dano = 5")
+      print("vida = 85 e dano = 15")
       def Guerreiro(b):
-        self.vida= 45
-        self.dano= 5
+        self.vida= 85
+        self.dano= 15
         self.classe = "Guerreiro"
         self.pocao = 1
-        self.habilidade = {"habilidade":f"Recupera {self.level * 5} de vida a cada 2 turnos no combate","Valor":5 * self.level}
+        self.habilidade = {"habilidade":f"Recupera {self.level * 10} de vida a cada 2 turnos no combate","Valor":10 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -50,13 +50,13 @@ class Personagem:
       display(buttonEscolhaGuerreiro)
 
       buttonEscolhaArqueiro = widgets.Button(description="Arqueiro")
-      print("vida = 25 e dano = 25")
+      print("vida = 45 e dano = 45")
       def Arqueiro(b):
-        self.vida= 25
-        self.dano= 25
+        self.vida= 45
+        self.dano= 45
         self.classe = "Arqueiro"
         self.pocao = 1
-        self.habilidade = {"habilidade":f"Ganha {self.level * 15} de ouro a cada 2 turnos no combate","Valor":15 * self.level}
+        self.habilidade = {"habilidade":f"Ganha {self.level * 25} de ouro a cada 2 turnos no combate","Valor":25 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -169,9 +169,9 @@ class Personagem:
 
 
     #combate
-    def atacar(self, criatura):
+    def atacar(self, Criatura):
         dano_caused = self.dano
-        criatura.vida -= dano_caused
+        Criatura.vida -= dano_caused
         print(f"{self.nome} atacou a criatura e causou {dano_caused} de dano!")
 
     def receber_ataque(self, dano_received):
@@ -187,8 +187,8 @@ class Personagem:
         print(f"{self.nome} ganhou {quantidade} de ouro!")
    
 
-    def ganharItem(self,criatura):
-        item = criatura.drop
+    def ganharItem(self,Criatura):
+        item = Criatura.drop
         self.inventario.append(item)
         print(f"{self.nome} ganhou {item}!")
         if item == "faca":
@@ -219,12 +219,12 @@ class Personagem:
     
 
 
-    def ganhar_xp(self, quantidade):
+    def ganhar_xp(self, quantidade,Criatura):
         valorParaSubirDeLevel = self.level * 100
         self.xp += quantidade
         print(f"{self.nome} ganhou {quantidade} de XP!")
         if self.xp >= valorParaSubirDeLevel:
-            self.level_up()
+            self.level_up(Criatura)
 
     def usarHabilidade(self,Criatura):
       if self.classe == "arqueiro":
@@ -242,18 +242,18 @@ class Personagem:
         self.ganhar_ouro(self.habilidade["Valor"])
         self.dano += val
         print(f"{self.nome} Usou a habilidade e ganhou {val} de dano")
-      self.escolha_caminho(Criatura)
+      
 
-    def level_up(self):
+    def level_up(self,Criatura):
         self.level += 1 
         self.dano += 5 * self.level
         self.vida += 10 * self.level
         print(f"vida: {self.vida}")
         print(f"dano: {self.dano}")
         print(f"{self.nome} subiu de nível! Agora está no nível {self.level}!")
-        self.escolher_peculiaridade()
+        self.escolher_peculiaridade(Criatura)
 
-    def escolher_peculiaridade(self):
+    def escolher_peculiaridade(self,Criatura):
         print("\nEscolha o que melhorar:")
         buttonDano = widgets.Button(description="Aumentar  Dano")
         buttonMaxVida = widgets.Button(description="Aumentar  Vida Máxima")
@@ -400,7 +400,7 @@ class Criatura:
             clear_output()
             print(f"{personagem.nome} derrotou a criatura!")
             personagem.ganhar_ouro(random.randint(5, 20))
-            personagem.ganhar_xp(random.randint(10, 50))
+            personagem.ganhar_xp(random.randint(10, 50),self)
             if self.ContBoss < 5:
               self.ContBoss += 1
             else:

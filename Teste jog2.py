@@ -1,4 +1,3 @@
-#Esse joguinho foi feito para ser jogado no Google Colab
 import ipywidgets as widgets
 from IPython.display import display
 import random
@@ -13,6 +12,10 @@ class Personagem:
         self.xp = 0
         self.level = 1
         self.classe = None
+        self.pocao = 0
+        self.inventario = []
+        #itens = faca +2 de dano, armadura fraca +5 de vida, espada + 5 de dano, armadura boa +10 de vida , espada lendária +10 de dano, armadura lendária +20 de vida.
+        self.habilidade = {"habilidade":"","Valor":0}
 
 
     #classes
@@ -24,6 +27,8 @@ class Personagem:
         self.vida= 30
         self.dano= 20
         self.classe = "Mago"
+        self.pocao = 1
+        self.habilidade = {"habilidade":f"Causa {self.level * 10} de dano a cada 3 turnos no combate","Valor":10 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -36,6 +41,8 @@ class Personagem:
         self.vida= 45
         self.dano= 5
         self.classe = "Guerreiro"
+        self.pocao = 1
+        self.habilidade = {"habilidade":f"Recupera {self.level * 5} de vida a cada 3 turnos no combate","Valor":5 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -48,6 +55,8 @@ class Personagem:
         self.vida= 25
         self.dano= 25
         self.classe = "Arqueiro"
+        self.pocao = 1
+        self.habilidade = {"habilidade":f"Ganha {self.level * 10} de ouro a cada 3 turnos no combate","Valor":10 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -64,6 +73,7 @@ class Personagem:
       print("escolha seu caminho")
       buttonEscolhaCaminho1 = widgets.Button(description="batalhar")
       def batalhar(b):
+        
         Criatura.CriarInimigo(self)
       buttonEscolhaCaminho1.on_click(batalhar)
       display(buttonEscolhaCaminho1)
@@ -122,11 +132,6 @@ class Personagem:
       buttonEscolhaCaminho2.on_click(loja)
       display(buttonEscolhaCaminho2)
 
-      
-
-
-
-
       buttonEscolhaCaminho3 = widgets.Button(description="Mostrar status")
       def mostrarStatus(b):
           clear_output()
@@ -136,19 +141,29 @@ class Personagem:
           print(f"Ouro: {self.ouro}")
           print(f"XP: {self.xp}")
           print(f"Level: {self.level}")
+          print(f"Classe: {self.classe}")
+          print(f"Poções: {self.pocao}")
+          print(f"Itens: {self.inventario}")
           self.escolha_caminho(Criatura)
 
       buttonEscolhaCaminho3.on_click(mostrarStatus)
       display(buttonEscolhaCaminho3)
 
 
-      buttonEscolhaCaminho4 = widgets.Button(description="sair")
+      buttonEscolhaCaminho4 = widgets.Button(description="Usar poção")
+      def pocao(b):
+        self.usarPocao(Criatura)
+      
+      buttonEscolhaCaminho4.on_click(pocao)
+      display(buttonEscolhaCaminho4)
+
+      buttonEscolhaCaminho5 = widgets.Button(description="sair")
       def sair(b):
         print("obrigado por jogar")
         #exit()
         return
-      buttonEscolhaCaminho4.on_click(sair)
-      display(buttonEscolhaCaminho4)
+      buttonEscolhaCaminho5.on_click(sair)
+      display(buttonEscolhaCaminho5)
 
 
 
@@ -169,6 +184,39 @@ class Personagem:
     def ganhar_ouro(self, quantidade):
         self.ouro += quantidade * self.level
         print(f"{self.nome} ganhou {quantidade} de ouro!")
+   
+
+    def ganharItem(self,criatura):
+        item = criatura.drop
+        self.inventario.append(item)
+        print(f"{self.nome} ganhou {item}!")
+        if item == "faca":
+            self.dano += 2
+        elif item == "armadura fraca":
+            self.vida += 5
+        elif item == "espada":
+            self.dano += 5
+        elif item == "armadura boa":
+            self.vida += 10
+        elif item == "espada lendaria":
+            self.dano += 10
+        elif item == "armadura lendaria":
+            self.vida += 20
+        else:
+            self.pocao += 1
+            print(f"{self.nome} ganhou uma poção!")
+
+
+    def usarPocao(self,Criatura):
+        if self.pocao > 0:
+            self.curar(5* self.level)
+            self.pocao -= 1
+            print(f"{self.nome} usou uma poção e recuperou {self.level * 5} de vida!")
+        else:
+            print(f"{self.nome} não tem mais poções!")
+        self.escolha_caminho(Criatura)
+    
+
 
     def ganhar_xp(self, quantidade):
         valorParaSubirDeLevel = 100 + (self.level * 1.5)
@@ -176,6 +224,11 @@ class Personagem:
         print(f"{self.nome} ganhou {quantidade} de XP!")
         if self.xp >= valorParaSubirDeLevel:
             self.level_up()
+
+    def usarHabilidade(self,Criatura):
+      if self.classe == "arqueiro":
+        self.ganhar_ouro(self.habilidade["Valor"])
+        print(f"{self.nome} Usou a habilidade e ganhou {self.habilidade} de ouro")
 
     def level_up(self):
         self.xp = 0
@@ -213,37 +266,85 @@ class Criatura:
         self.dano = 0
         self.xp = 0
         self.valor = 0
+        self.ContBoss = 0
+        self.drop = ""
 
-    def CriarInimigo(self,Personagem):
-      inimigo = random.randint(1,3)
-      if inimigo == 1:
-          self.nome = "Goblin"
-          vidamaxima = 20 * Personagem.level
-          danomaximo = 5 * Personagem.level
-          self.vida = random.randint(20, vidamaxima)
-          self.dano = random.randint(5, danomaximo)
-          self.xp = 10 * Personagem.level
-          self.valor = 10 * Personagem.level
-      elif inimigo == 2:
-          self.nome = "Orc"
-          vidamaxima = 30 * Personagem.level
-          danomaximo = 5 * Personagem.level
-          self.vida = random.randint(30, vidamaxima)
+    def CriarInimigo(self,personagem):
+      if self.ContBoss == 5:
+        inimigo = random.randint(1,3)
+        if inimigo == 1:
+          self.nome = "Rei slime"
+          vidamaxima = 100 * personagem.level
+          danomaximo = 10 * personagem.level
+          self.vida = random.randint(50, vidamaxima)
           self.dano = random.randint(10, danomaximo)
-          self.xp = 30 * Personagem.level
-          self.valor = 15 * Personagem.level
-      elif inimigo == 3:
-          self.nome = "Dragao"
-          vidamaxima = 50 * Personagem.level
-          danomaximo = 5 * Personagem.level
+          self.xp = 50 * personagem.level
+          self.valor = 50 * personagem.level
+          self.drop =  self.escolherDrop()
+        elif inimigo == 2:
+          self.nome = "Rei Dragão"
+          vidamaxima = 200 * personagem.level
+          danomaximo = 20 * personagem.level
+          self.vida = random.randint(100, vidamaxima)
+          self.dano = random.randint(20, danomaximo)
+          self.xp = 100 * personagem.level
+          self.valor = 100 * personagem.level
+          self.drop =  self.escolherDrop()
+        else:
+          self.nome = "Rei Troll"
+          vidamaxima = 150 * personagem.level
+          danomaximo = 15 * personagem.level
           self.vida = random.randint(50, vidamaxima)
           self.dano = random.randint(15, danomaximo)
-          self.xp = 50 * Personagem.level
-          self.valor = 20 * Personagem.level
+          self.xp = 50 * personagem.level
+          self.valor = 100 * personagem.level
+          self.drop =  self.escolherDrop()
+      else:
+        inimigo = random.randint(1,3)
+        if inimigo == 1:
+            self.nome = "Goblin"
+            vidamaxima = 20 * personagem.level
+            danomaximo = 5 * personagem.level
+            self.vida = random.randint(20, vidamaxima)
+            self.dano = random.randint(5, danomaximo)
+            self.xp = 10 * personagem.level
+            self.valor = 20 * personagem.level
+        elif inimigo == 2:
+            self.nome = "Orc"
+            vidamaxima = 30 * personagem.level
+            danomaximo = 10 * personagem.level
+            self.vida = random.randint(30, vidamaxima)
+            self.dano = random.randint(10, danomaximo)
+            self.xp = 30 * personagem.level
+            self.valor = 25 * personagem.level
+        elif inimigo == 3:
+            self.nome = "Dragao"
+            vidamaxima = 50 * personagem.level
+            danomaximo = 15 * personagem.level
+            self.vida = random.randint(50, vidamaxima)
+            self.dano = random.randint(15, danomaximo)
+            self.xp = 50 * personagem.level
+            self.valor = 30 * personagem.level
       print(f"Você encontrou um {self.nome} com {self.vida} de vida e {self.dano} de dano!")
-      self.batalha(Personagem)
+      self.batalha(personagem)
 
 
+    def escolherDrop(self):
+      item = random.randint(1,7)
+      if item == 1:
+        return "faca"
+      elif item == 2:
+        return "armadura fraca"
+      elif item == 3:
+        return "espada"
+      elif item == 4:
+        return "armadura boa"
+      elif item == 5:
+        return "espada lendaria"
+      elif item == 6:
+        return "armadura lendaria"
+      else:
+        return "poção"
 
     def atacar(self, personagem):
         dano_caused = random.randint(0, self.dano)
@@ -254,12 +355,12 @@ class Criatura:
       while personagem.vida > 0 and self.vida > 0:
         # O jogador ataca
         personagem.atacar(self)
-        time.sleep(1)  # Pausa para dar mais ritmo ao jogo
+        time.sleep(2)  # Pausa para dar mais ritmo ao jogo
 
         # A criatura ataca de volta
         if self.vida > 0:
             self.atacar(personagem)
-            time.sleep(1)  # Pausa para dar mais ritmo ao jogo
+            time.sleep(2)  # Pausa para dar mais ritmo ao jogo
 
         # Mostra o status após cada turno
         print(f"Vida do {personagem.nome}: {personagem.vida}")
@@ -276,6 +377,11 @@ class Criatura:
             print(f"{personagem.nome} derrotou a criatura!")
             personagem.ganhar_ouro(random.randint(5, 20))
             personagem.ganhar_xp(random.randint(10, 50))
+            if self.ContBoss < 5:
+              self.ContBoss += 1
+            else:
+              personagem.ganharItem(self) 
+              Criatura.ContBoss = 0
             personagem.escolha_caminho(self)
             return True  # Jogador venceu
 

@@ -83,12 +83,13 @@ class Personagem:
       def loja(b):
           print("Bem-vindo à loja!")
           print("Escolha o que deseja comprar:")
+          print(f"ouro:{self.ouro}")
           
           # Criação dos botões
           buttonSair = widgets.Button(description="Sair (batalhar)")
-          buttonVida = widgets.Button(description="Comprar +5 Vida (20 Ouro)")
-          buttonDano = widgets.Button(description="Comprar +5 Dano (100 Ouro)")
-          buttonMaxVida = widgets.Button(description="Comprar +50 Vida Máxima (100 Ouro)")
+          buttonVida = widgets.Button(description="+5 Vida (20 Ouro)")
+          buttonDano = widgets.Button(description="+5 Dano (100 Ouro)")
+          buttonMaxVida = widgets.Button(description="+50 Vida Máxima (100 Ouro)")
           
           # Funções associadas aos botões
           def sair_loja(b):
@@ -254,15 +255,19 @@ class Personagem:
 
     def escolher_peculiaridade(self):
         print("\nEscolha o que melhorar:")
-        buttonDano = widgets.Button(description="Aumentar +5 Dano")
-        buttonMaxVida = widgets.Button(description="Aumentar +50 Vida Máxima")
+        buttonDano = widgets.Button(description="Aumentar  Dano")
+        buttonMaxVida = widgets.Button(description="Aumentar  Vida Máxima")
         def aumentar_dano(b):
             self.dano += 5
-            print("Você escolheu aumentar +5 de dano!")
+            print("Você escolheu aumentar dano!")
+            clear_output()
+            self.escolha_caminho(Criatura)
               
         def aumentar_vida_max(b):
             self.vida += 50
-            print("Você escolheu aumentar +50 de vida máxima!")
+            print("Você escolheu aumentar vida!")
+            clear_output()
+            self.escolha_caminho(Criatura)
 
 
         buttonDano.on_click(aumentar_dano)
@@ -295,8 +300,8 @@ class Criatura:
           self.drop =  self.escolherDrop()
         elif inimigo == 2:
           self.nome = "Rei Dragão"
-          vidamaxima = 200 * personagem.level
-          danomaximo = 15 * personagem.level
+          vidamaxima = 100 * personagem.level
+          danomaximo = 20 * personagem.level
           self.vida = random.randint(100, vidamaxima)
           self.dano = random.randint(15, danomaximo)
           self.xp = 100 * personagem.level
@@ -305,7 +310,7 @@ class Criatura:
         else:
           self.nome = "Rei Troll"
           vidamaxima = 150 * personagem.level
-          danomaximo = 10 * personagem.level
+          danomaximo = 15 * personagem.level
           self.vida = random.randint(50, vidamaxima)
           self.dano = random.randint(10, danomaximo)
           self.xp = 50 * personagem.level
@@ -316,7 +321,7 @@ class Criatura:
         if inimigo == 1:
             self.nome = "Goblin"
             vidamaxima = 20 * personagem.level 
-            danomaximo = 2 * personagem.level 
+            danomaximo = 8 * personagem.level 
             self.vida = random.randint(20, vidamaxima)
             self.dano = random.randint(2, danomaximo)
             self.xp = 10 * personagem.level
@@ -324,7 +329,7 @@ class Criatura:
         elif inimigo == 2:
             self.nome = "Orc"
             vidamaxima = 30 * personagem.level 
-            danomaximo = 5 * personagem.level 
+            danomaximo = 10 * personagem.level 
             self.vida = random.randint(30, vidamaxima)
             self.dano = random.randint(5, danomaximo)
             self.xp = 30 * personagem.level
@@ -332,7 +337,7 @@ class Criatura:
         elif inimigo == 3:
             self.nome = "Dragao"
             vidamaxima = 50 * personagem.level
-            danomaximo = 5 * personagem.level
+            danomaximo = 15 * personagem.level
             self.vida = random.randint(50, vidamaxima)
             self.dano = random.randint(5, danomaximo)
             self.xp = 50 * personagem.level

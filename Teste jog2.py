@@ -28,7 +28,7 @@ class Personagem:
         self.dano= 20
         self.classe = "Mago"
         self.pocao = 1
-        self.habilidade = {"habilidade":f"Causa {self.level * 10} de dano a cada 3 turnos no combate","Valor":10 * self.level}
+        self.habilidade = {"habilidade":f"Ganha {self.level * 1} de dano permanente a cada 2 turnos no combate","Valor":1 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -42,7 +42,7 @@ class Personagem:
         self.dano= 5
         self.classe = "Guerreiro"
         self.pocao = 1
-        self.habilidade = {"habilidade":f"Recupera {self.level * 5} de vida a cada 3 turnos no combate","Valor":5 * self.level}
+        self.habilidade = {"habilidade":f"Recupera {self.level * 5} de vida a cada 2 turnos no combate","Valor":5 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -56,7 +56,7 @@ class Personagem:
         self.dano= 25
         self.classe = "Arqueiro"
         self.pocao = 1
-        self.habilidade = {"habilidade":f"Ganha {self.level * 10} de ouro a cada 3 turnos no combate","Valor":10 * self.level}
+        self.habilidade = {"habilidade":f"Ganha {self.level * 15} de ouro a cada 2 turnos no combate","Valor":15 * self.level}
         print(f"\nBem-vindo ao jogo, {self.nome}, você é um,{self.classe}, habilidoso!")
         !clear
         self.escolha_caminho(Criatura)
@@ -219,7 +219,7 @@ class Personagem:
 
 
     def ganhar_xp(self, quantidade):
-        valorParaSubirDeLevel = 100 + (self.level * 1.5)
+        valorParaSubirDeLevel = self.level * 100
         self.xp += quantidade
         print(f"{self.nome} ganhou {quantidade} de XP!")
         if self.xp >= valorParaSubirDeLevel:
@@ -227,14 +227,26 @@ class Personagem:
 
     def usarHabilidade(self,Criatura):
       if self.classe == "arqueiro":
+        val = self.habilidade["Valor"]
         self.ganhar_ouro(self.habilidade["Valor"])
-        print(f"{self.nome} Usou a habilidade e ganhou {self.habilidade} de ouro")
+        print(f"{self.nome} Usou a habilidade e ganhou {val} de ouro")
+        self.ouro += val
+      elif self.classe == "guerreiro":
+        val = self.habilidade["Valor"]
+        self.curar(self.habilidade["Valor"])
+        print(f"{self.nome} Usou a habilidade e curou {val} de vida")
+        self.vida += val
+      else:
+        val = self.habilidade["Valor"]
+        self.ganhar_ouro(self.habilidade["Valor"])
+        self.dano += val
+        print(f"{self.nome} Usou a habilidade e ganhou {val} de dano")
+      self.escolha_caminho(Criatura)
 
     def level_up(self):
-        self.xp = 0
-        self.level += 1
-        self.dano += 5
-        self.vida += 10
+        self.level += 1 
+        self.dano += 5 * self.level
+        self.vida += 10 * self.level
         print(f"vida: {self.vida}")
         print(f"dano: {self.dano}")
         print(f"{self.nome} subiu de nível! Agora está no nível {self.level}!")
@@ -284,18 +296,18 @@ class Criatura:
         elif inimigo == 2:
           self.nome = "Rei Dragão"
           vidamaxima = 200 * personagem.level
-          danomaximo = 20 * personagem.level
+          danomaximo = 15 * personagem.level
           self.vida = random.randint(100, vidamaxima)
-          self.dano = random.randint(20, danomaximo)
+          self.dano = random.randint(15, danomaximo)
           self.xp = 100 * personagem.level
           self.valor = 100 * personagem.level
           self.drop =  self.escolherDrop()
         else:
           self.nome = "Rei Troll"
           vidamaxima = 150 * personagem.level
-          danomaximo = 15 * personagem.level
+          danomaximo = 10 * personagem.level
           self.vida = random.randint(50, vidamaxima)
-          self.dano = random.randint(15, danomaximo)
+          self.dano = random.randint(10, danomaximo)
           self.xp = 50 * personagem.level
           self.valor = 100 * personagem.level
           self.drop =  self.escolherDrop()
@@ -303,26 +315,26 @@ class Criatura:
         inimigo = random.randint(1,3)
         if inimigo == 1:
             self.nome = "Goblin"
-            vidamaxima = 20 * personagem.level
-            danomaximo = 5 * personagem.level
+            vidamaxima = 20 * personagem.level 
+            danomaximo = 2 * personagem.level 
             self.vida = random.randint(20, vidamaxima)
-            self.dano = random.randint(5, danomaximo)
+            self.dano = random.randint(2, danomaximo)
             self.xp = 10 * personagem.level
             self.valor = 20 * personagem.level
         elif inimigo == 2:
             self.nome = "Orc"
-            vidamaxima = 30 * personagem.level
-            danomaximo = 10 * personagem.level
+            vidamaxima = 30 * personagem.level 
+            danomaximo = 5 * personagem.level 
             self.vida = random.randint(30, vidamaxima)
-            self.dano = random.randint(10, danomaximo)
+            self.dano = random.randint(5, danomaximo)
             self.xp = 30 * personagem.level
             self.valor = 25 * personagem.level
         elif inimigo == 3:
             self.nome = "Dragao"
             vidamaxima = 50 * personagem.level
-            danomaximo = 15 * personagem.level
+            danomaximo = 5 * personagem.level
             self.vida = random.randint(50, vidamaxima)
-            self.dano = random.randint(15, danomaximo)
+            self.dano = random.randint(5, danomaximo)
             self.xp = 50 * personagem.level
             self.valor = 30 * personagem.level
       print(f"Você encontrou um {self.nome} com {self.vida} de vida e {self.dano} de dano!")
@@ -352,7 +364,14 @@ class Criatura:
         print(f"A criatura atacou e causou {dano_caused} de dano!")
 
     def batalha(self,personagem):
+      turno = 0
       while personagem.vida > 0 and self.vida > 0:
+        
+        if turno == 2:
+          personagem.usarHabilidade(self)
+          turno = 0
+        else:
+          turno += 1
         # O jogador ataca
         personagem.atacar(self)
         time.sleep(2)  # Pausa para dar mais ritmo ao jogo
@@ -381,7 +400,7 @@ class Criatura:
               self.ContBoss += 1
             else:
               personagem.ganharItem(self) 
-              Criatura.ContBoss = 0
+              self.ContBoss = 0
             personagem.escolha_caminho(self)
             return True  # Jogador venceu
 
